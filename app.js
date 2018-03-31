@@ -37,7 +37,7 @@ app.route('/api/users')
  if (err) {
  resp.json({ message: 'Unable to connect to books' });
  } else {
-     resp.json({ message: 'connected to books' });
+
  // return JSON retrieved by Mongo as response
  resp.json(data);
  }

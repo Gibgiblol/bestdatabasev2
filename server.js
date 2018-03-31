@@ -1,6 +1,11 @@
 var express = require('express');
 var parser = require('body-parser');
 
+var port = process.env.PORT || 3000;
+app.listen(port, "0.0.0.0", function() {
+console.log("Listening on Port 3000");
+});
+
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://charles:charles123@ds231199.mlab.com:31199/bestdatabasev2');
 var db = mongoose.connection;
@@ -44,8 +49,8 @@ app.route('/api/users')
  });
  });
  
- // Use express to listen to port
-let port = 8080;
-app.listen(port, function () {
- console.log("Server running at port= " + port);
-});
+// // Use express to listen to port
+//let port = 8080;
+//app.listen(port, function () {
+// console.log("Server running at port= " + port);
+//});
