@@ -25,6 +25,10 @@ var app = express();
 app.use(parser.json());
 app.use(parser.urlencoded({extended: true}));
 
+app.get("/", function(req, res) {
+ res.send("Heroku Demo!");
+});
+
 // handle GET requests for [domain]/api/books e.g. return all books
 app.route('/api/users')
  .get(function (req,resp) {
@@ -33,6 +37,7 @@ app.route('/api/users')
  if (err) {
  resp.json({ message: 'Unable to connect to books' });
  } else {
+     resp.json({ message: 'connected to books' });
  // return JSON retrieved by Mongo as response
  resp.json(data);
  }
