@@ -25,6 +25,10 @@ var app = express();
 app.use(parser.json());
 app.use(parser.urlencoded({extended: true}));
 
+app.get("/", function(req, res) {
+ res.send("Heroku Demo!");
+});
+
 // handle GET requests for [domain]/api/books e.g. return all books
 app.route('/api/users')
  .get(function (req,resp) {
