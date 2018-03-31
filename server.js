@@ -37,15 +37,14 @@ app.route('/api/users')
  if (err) {
  resp.json({ message: 'Unable to connect to books' });
  } else {
-     resp.json({ message: 'connected to books' });
  // return JSON retrieved by Mongo as response
  resp.json(data);
  }
  });
  });
  
-// // Use express to listen to port
-//let port = 8080;
-//app.listen(port, function () {
-// console.log("Server running at port= " + port);
-//});
+ // Use express to listen to port
+let port = 8080;
+app.listen(process.env.PORT || 5000, function () {
+ console.log("Server running at port= " + port);
+});
