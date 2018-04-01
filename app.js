@@ -16,7 +16,7 @@ var bookSchema = new mongoose.Schema({
 });
 
 // “compile” the schema into a model
-var Book = mongoose.model('users',bookSchema);
+var User = mongoose.model('users',bookSchema);
 
 // create an express app
 
@@ -33,11 +33,10 @@ app.get("/", function(req, res) {
 app.route('/api/users')
  .get(function (req,resp) {
  // use mongoose to retrieve all books from Mongo
- Book.find({}, function(err, data) {
+ User.find({}, function(err, data) {
  if (err) {
  resp.json({ message: 'Unable to connect to books' });
  } else {
-
  // return JSON retrieved by Mongo as response
  resp.json(data);
  }
@@ -46,6 +45,6 @@ app.route('/api/users')
  
  // Use express to listen to port
 let port = 8080;
-app.listen(port, function () {
+app.listen(process.env.PORT || 5000, function () {
  console.log("Server running at port= " + port);
 });
