@@ -31,7 +31,7 @@ var companySchema = new mongoose.Schema({
 });
 
 var priceSchema = new mongoose.Schema({
-    date: Date,
+    date: String,
     open: Number,
     high: Number,
     low: Number,
@@ -102,6 +102,47 @@ app.route('/api/company/:symbol')
  resp.json({ message: 'Company not found' });
  } else {
  resp.json(data);
+ }
+ });
+ });
+
+// handle requests for specific company prices
+app.route('/api/price/:symbol')
+ .get(function (req,resp) {
+ Prices.find({name: req.params.symbol}, function(err, data) {
+ if (err) {
+ resp.json({ message: 'Prices not found' });
+ } else {
+    var priceArray = data;
+    var tempArr = [];
+     var average = 0;
+     for (let x = 0; x < data.length; x++) {
+         let thisMonth = data[x].date.split("-");
+         
+         if (tempArr[thisMonth[1]] == null) {
+             var countDays = 1;
+             tempArr[thisMonth[1]] = data[x].close;
+         }
+         else {
+         var tempNum = tempArr[thisMonth[1]] + data[x].close;
+         tempArr[thisMonth[1]] = tempNum;
+         countDays++;
+         if (x+1 != data.length) {
+             let nextMonth = data[x+1].date.split("-"); 
+             if (thisMonth[1] != nextMonth[1]) {
+                 var tempNum = tempArr[thisMonth[1]]/countDays;
+                 tempArr[thisMonth[1]] = tempNum;
+             }
+         }
+         
+         }
+         
+         
+     }
+
+     console.log(tempArr);
+     resp.json({ message: 'it worked' });
+     
  }
  });
  });
