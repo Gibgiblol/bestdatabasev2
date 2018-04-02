@@ -176,7 +176,7 @@ app.route('/api/price/month/:symbol/:month')
             if (err) {
                 console.log(err);
                 resp.json({
-                    message: 'Symbol and date not found'
+                    message: 'Symbol and month not found'
                 });
             } else {
 
@@ -264,8 +264,9 @@ app.route('/api/portfoliosum/:userid')
             
             {
                 $project: {
+                    _id: 0,
                     symbol: 1,
-                    owned: {$sum: "$owned"}
+                    owned: "$owned"
                 }
         }
 
@@ -276,7 +277,15 @@ app.route('/api/portfoliosum/:userid')
                     message: 'Symbol and date not found'
                 });
             } else {
-
+                var percentageArray = [];
+                var totalOwned = 0;
+                for (let x = 0; x < data.length; x++) {
+                    totalOwned += data[x].owned;
+                }
+                for (let y = 0; y < data.length; y++) {
+                    data[y].owned = ((data[y].owned / totalOwned) * 100).toFixed(2);
+                }
+                
                 resp.json(data);
             }
         });
