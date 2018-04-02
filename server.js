@@ -1,6 +1,6 @@
 var express = require('express');
 var parser = require('body-parser');
-
+    
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://charles:charles123@ds231199.mlab.com:31199/bestdatabasev2');
 var db = mongoose.connection;
@@ -63,6 +63,10 @@ app.use(parser.json());
 app.use(parser.urlencoded({
     extended: true
 }));
+
+app.use(function (req, resp) {
+    res.setHeader('Access-Control-Allow-Origin', "*");
+});
 
 app.get("/", function (req, res) {
     res.send("ITS ALIVE");
