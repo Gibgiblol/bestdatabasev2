@@ -53,7 +53,7 @@ var portfolioSchema = new mongoose.Schema({
 var User = mongoose.model('users',userSchema);
 var Companies = mongoose.model('companies', companySchema);
 var Prices = mongoose.model('prices', priceSchema);
-var Portfolio = mongoose.model('portfolio', portfolioSchema);
+var Portfolio = mongoose.model('portfolios', portfolioSchema);
 
 // create an express app
 
@@ -114,6 +114,26 @@ Prices.aggregate([
             $match: {
                 name: req.params.symbol,
                 date: req.params.date
+            }
+        }
+    ], function (err, data) {
+        if (err) {
+            console.log(err);
+            resp.json({ message: 'Symbol and date not found' });
+        } else {
+            resp.json(data);
+        }
+    });
+ });
+
+//Gets price information on symbol and newest date 2017-12-29
+app.route('/api/pricelast/:symbol')
+ .get(function (req,resp) {
+Prices.aggregate([
+        {
+            $match: {
+                name: req.params.symbol,
+                date: "2017-12-29"
             }
         }
     ], function (err, data) {
@@ -190,6 +210,18 @@ app.route('/api/price/:symbol')
      console.log(tempArr);
      resp.json(tempArr);
      
+ }
+ });
+ });
+
+// handle requests for specific portfolio
+app.route('/api/portfolio/:userid')
+ .get(function (req,resp) {
+ Portfolio.find({user: req.params.userid}, function(err, data) {
+ if (err) {
+ resp.json({ message: 'Company not found' });
+ } else {
+ resp.json(data);
  }
  });
  });
