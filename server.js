@@ -63,7 +63,7 @@ app.use(parser.json());
 app.use(parser.urlencoded({extended: true}));
 
 app.get("/", function(req, res) {
- res.send("Heroku Demo!");
+ res.send("ITS ALIVE");
 });
 
 // handle GET requests for [domain]/api/users e.g. return all users
@@ -106,6 +106,47 @@ app.route('/api/company/:symbol')
  });
  });
 
+//Gets price information on symbol and exact date inputted
+app.route('/api/price/:symbol/:date')
+ .get(function (req,resp) {
+Prices.aggregate([
+        {
+            $match: {
+                name: req.params.symbol,
+                date: req.params.date
+            }
+        }
+    ], function (err, data) {
+        if (err) {
+            console.log(err);
+            resp.json({ message: 'Symbol and date not found' });
+        } else {
+            resp.json(data);
+        }
+    });
+ });
+
+//Gets price information on symbol and month inputted
+app.route('/api/price/month/:symbol/:month')
+ .get(function (req,resp) {
+Prices.aggregate([
+        {
+            $match: {
+                name: req.params.symbol,  
+                date: { "$regex": "-"+req.params.month+"-"}
+            }
+        }
+    ], function (err, data) {
+        if (err) {
+            console.log(err);
+            resp.json({ message: 'Symbol and date not found' });
+        } else {
+            
+            resp.json(data);
+        }
+    });
+ });
+
 // handle requests for specific company prices
 app.route('/api/price/:symbol')
  .get(function (req,resp) {
@@ -117,21 +158,27 @@ app.route('/api/price/:symbol')
     var tempArr = [];
      var average = 0;
      for (let x = 0; x < data.length; x++) {
+         //Get Date string and split it into parts. Ex. 2017-01-01 = 2017,01,01
          let thisMonth = data[x].date.split("-");
          
-         if (tempArr[thisMonth[1]] == null) {
+         //If tempArr[1] is null, which means new month, set counter to 1, and insert new value
+         if (tempArr[parseInt(thisMonth[1])] == null) {
              var countDays = 1;
-             tempArr[thisMonth[1]] = data[x].close;
+             tempArr[parseInt(thisMonth[1])] = data[x].close;
          }
+         
+         //if tempArr isn't empty, take previous value and add together, and place back in.
          else {
-         var tempNum = tempArr[thisMonth[1]] + data[x].close;
-         tempArr[thisMonth[1]] = tempNum;
+         var tempNum = tempArr[parseInt(thisMonth[1])] + data[x].close;
+         tempArr[parseInt(thisMonth[1])] = tempNum;
          countDays++;
+            
+         //If the next day is a new month, tally up current months closing value and average it and place it back into array     
          if (x+1 != data.length) {
              let nextMonth = data[x+1].date.split("-"); 
-             if (thisMonth[1] != nextMonth[1]) {
-                 var tempNum = tempArr[thisMonth[1]]/countDays;
-                 tempArr[thisMonth[1]] = tempNum;
+             if (parseInt(thisMonth[1]) != parseInt(nextMonth[1])) {
+                 var tempNum = tempArr[parseInt(thisMonth[1])]/countDays;
+                 tempArr[parseInt(thisMonth[1])] = tempNum;
              }
          }
          
@@ -141,7 +188,7 @@ app.route('/api/price/:symbol')
      }
 
      console.log(tempArr);
-     resp.json({ message: 'it worked' });
+     resp.json(tempArr);
      
  }
  });
