@@ -64,12 +64,15 @@ app.use(parser.urlencoded({
     extended: true
 }));
 
-app.use(function (req, resp) {
-    res.setHeader('Access-Control-Allow-Origin', "*");
+app.use(function (req, resp, next) {
+    resp.setHeader('Access-Control-Allow-Origin', "*");
+    
+    next();
+    
 });
 
-app.get("/", function (req, res) {
-    res.send("ITS ALIVE");
+app.get("/", function (req, resp) {
+    resp.send("ITS ALIVE");
 });
 
 // handle GET requests for [domain]/api/users e.g. return all users
