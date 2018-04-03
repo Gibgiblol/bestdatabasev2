@@ -207,13 +207,14 @@ app.route('/api/price/:symbol')
                 var tempArr = [];
                 var average = 0;
                 var tempNum = 0;
+                var countDays = 1;
                 for (let x = 0; x < data.length; x++) {
                     //Get Date string and split it into parts. Ex. 2017-01-01 = 2017,01,01
                     let thisMonth = data[x].date.split("-");
 
-                    //If tempArr[1] is null, which means new month, set counter to 1, and insert new value
+                    //If tempArr[x] is null, which means new month, set counter to 1, and insert new value
                     if (tempArr[parseInt(thisMonth[1])] == null) {
-                        var countDays = 1;
+                        
                         tempNum = 0;
                         tempArr[parseInt(thisMonth[1])] = data[x].close;
                     }
@@ -221,17 +222,25 @@ app.route('/api/price/:symbol')
                     //if tempArr isn't empty, take previous value and add together, and place back in.
                     else {
                         tempNum = tempArr[parseInt(thisMonth[1])] + data[x].close;
+                        
                         tempArr[parseInt(thisMonth[1])] = tempNum;
                         countDays++;
 
-                        //If the next day is a new month, tally up current months closing value and average it and place it back into array     
+                        //If the next day is a new month, tally up current months closing value and average it and place it back into array  
                         if (x + 1 != data.length) {
                             let nextMonth = data[x + 1].date.split("-");
                             if (parseInt(thisMonth[1]) != parseInt(nextMonth[1])) {
-                                var tempNum = tempArr[parseInt(thisMonth[1])] / countDays;
-                                tempArr[parseInt(thisMonth[1])] = (tempNum).toFixed(2);
+                                tempNum = tempArr[parseInt(thisMonth[1])] / countDays;
+                                tempArr[parseInt(thisMonth[1])] = tempNum;
+                                countDays = 1;
                             }
+                        
                         }
+                        else {
+                            tempNum = tempArr[parseInt(thisMonth[1])] / countDays;
+                                tempArr[parseInt(thisMonth[1])] = tempNum;
+                        }
+                        
 
                     }
 
