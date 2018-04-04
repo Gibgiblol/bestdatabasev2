@@ -192,7 +192,7 @@ app.route('/api/price/month/:symbol/:month')
         });
     });
 
-// handle requests for specific company prices
+// handle requests for specific company closing prices for each month
 app.route('/api/price/:symbol')
     .get(function (req, resp) {
         Prices.find({
@@ -284,11 +284,12 @@ app.route('/api/portfoliosum/:userid')
                 $project: {
                     _id: 0,
                     symbol: 1,
-                    owned: "$owned"
+                    owned: "$owned",
                 }
         }
 
     ], function (err, data) {
+            var chartArray = [];
             if (err) {
                 console.log(err);
                 resp.json({
@@ -297,14 +298,21 @@ app.route('/api/portfoliosum/:userid')
             } else {
                 var percentageArray = [];
                 var totalOwned = 0;
+                
+                //Adds up all the total stocks to average
                 for (let x = 0; x < data.length; x++) {
                     totalOwned += data[x].owned;
                 }
+                
+                //Reconfigure object in order to parse information using react-easy-chart {key, value}
                 for (let y = 0; y < data.length; y++) {
-                    data[y].owned = ((data[y].owned / totalOwned) * 100).toFixed(2);
+                    let key = (data[y].symbol);
+                    let value = ((data[y].owned / totalOwned) * 100).toFixed(2);
+                    let newObj = {key, value};
+                    chartArray.push(newObj);
                 }
                 
-                resp.json(data);
+                resp.json(chartArray);
             }
         });
     });
