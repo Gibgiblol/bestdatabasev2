@@ -192,6 +192,39 @@ app.route('/api/price/month/:symbol/:month')
         });
     });
 
+//Gets price information on symbol and month inputted, formatted for stock visualizer
+app.route('/api/price/visual/:symbol/:month')
+    .get(function (req, resp) {
+    var chartArray = [];
+        Prices.aggregate([
+            {
+                $match: {
+                    name: req.params.symbol,
+                    date: {
+                        "$regex": "-" + req.params.month + "-"
+                    }
+                }
+        }
+    ], function (err, data) {
+            if (err) {
+                console.log(err);
+                resp.json({
+                    message: 'Symbol and month not found'
+                });
+            } else {
+            //Reconfigure object in order to parse information using react-easy-chart {key, value}
+                for (let i = 0; i < data.length; i++) {
+                    let x = data[i].date;
+                    let y = data[i].close;
+                    let newObj = {x, y};
+                    chartArray.push(newObj);
+                }
+
+                resp.json(chartArray);
+            }
+        });
+    });
+
 // handle requests for specific company closing prices for each month
 app.route('/api/price/:symbol')
     .get(function (req, resp) {
@@ -296,7 +329,7 @@ app.route('/api/portfoliosum/:userid')
                     message: 'Symbol and date not found'
                 });
             } else {
-                var percentageArray = [];
+             
                 var totalOwned = 0;
                 
                 //Adds up all the total stocks to average
