@@ -91,6 +91,22 @@ app.route('/api/users')
         });
     });
 
+// handle requests for specific company
+app.route('/api/users/:email')
+    .get(function (req, resp) {
+        User.find({
+            symbol: req.params.email
+        }, function (err, data) {
+            if (err) {
+                resp.json({
+                    message: 'User not found'
+                });
+            } else {
+                resp.json(data);
+            }
+        });
+    });
+
 // handle GET requests for [domain]/api/company e.g. return all company
 app.route('/api/company')
     .get(function (req, resp) {
