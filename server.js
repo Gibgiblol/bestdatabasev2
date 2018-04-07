@@ -95,7 +95,7 @@ app.route('/api/users')
 app.route('/api/users/:email')
     .get(function (req, resp) {
         User.find({
-            symbol: req.params.email
+            email: req.params.email
         }, function (err, data) {
             if (err) {
                 resp.json({
